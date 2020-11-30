@@ -10,8 +10,7 @@ app.use(express.urlencoded({ extended: true }));
 
 //axios setting
 axios.defaults.baseURL = process.env.ZOHO_CRM_BASE_URL;
-//axios.defaults.headers.common['Authorization'] = AUTH_TOKEN;
-//axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+
 
 
 app.get('/', (req, res) => {
