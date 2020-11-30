@@ -1,0 +1,20 @@
+{
+  "name": "crm-helper",
+  "version": "1.0.0",
+  "main": "app.js",
+  "dependencies": {
+    "axios": "^0.21.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "nodemon": "^2.0.6",
+    "open": "^7.3.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "dev",
+    "dev": "nodemon app.js"
+  },
+  "author": "Naveh Lev",
+  "license": "ISC",
+  "description": "zoho creator crm app helper"
+}
