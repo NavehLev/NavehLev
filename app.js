@@ -15,7 +15,7 @@ axios.defaults.baseURL = process.env.ZOHO_CRM_BASE_URL;
 
 app.get('/', (req, res) => {
     console.log(req.method);
-    res.send('Hello World!');
+    res.send('crm helper server');
 })
 
 //get authentication code
