@@ -1,5 +1,5 @@
 require('dotenv').config();
-let controller = require('./controller');
+let inboundController = require('./inbound_controller');
 const axios = require('axios').default;
 
 const express = require('express');
@@ -11,27 +11,21 @@ app.use(express.urlencoded({ extended: true }));
 //axios setting
 axios.defaults.baseURL = process.env.ZOHO_CRM_BASE_URL;
 
+/*
+inbound API
+*/
 
+//Makat
+app.post('/makat', inboundController.makat);
 
-app.get('/', (req, res) => {
-    console.log(req.method);
-    res.send('crm helper server');
-})
+//Lead
+app.post('/lead', inboundController.lead);
 
-//get authentication code
-app.get('/auth', controller.getAuthCode);
+//Order
 
-//get from Priority server and post to Zoho app
-app.get('/customers', (req,res) => {
-    res.send('customers');
-});
-app.get('/makats', (req,res) => {
-    res.send('makats');
-});
-
-//post to Zoho app
-app.post('/customer',controller.addNewEnterprise);
-app.post('/makat', controller.addNewMakat);
+/*
+outbound API
+*/
 
 app.listen(port, () => {
     console.log(`Listening at http://localhost:${port}`);
