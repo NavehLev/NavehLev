@@ -114,9 +114,8 @@ let lead = async (req, res, next) => {
 
 let order = async (req, res, next) => {
     try {
-        console.log("req.body: " + req.body);
         let data = await helpers.convertOrderData(req.body);
-        console.log("parsed data: " + data);
+        console.log("parsed data: " + JSON.stringify(data));
         res.send("wp order data: " + JSON.stringify(data));
     } catch (err) {
         console.log(err);
