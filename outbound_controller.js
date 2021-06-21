@@ -7,6 +7,35 @@ let getCustomers = () => { }
 let getMakats = () => { }
 
 //Zoho creator API
+let newCustomer = async (data) => {
+    let token = null;
+    try {
+        token = await newAccessToken();
+    } catch (err) {
+        console.log(err);
+    }
+    return new Promise((resolve, reject) => {
+        if (token == null) { reject('no token') }
+        let url = process.env.ZOHO_CRM_BASE_URL + '/form/Enterprise';
+        let config = {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        }
+        response = axios.post(
+            url,
+            data,
+            config
+        ).then((response) => {
+            resolve(response);
+        })
+            .catch((error) => {
+                console.log(error);
+                reject(error);
+            });
+    })
+}
+
 let newMakat = async (data) => {
     let token = null;
     try {
@@ -38,7 +67,6 @@ let newMakat = async (data) => {
 }
 
 let newLead = async (data) => {
-    console.log('newLead data: ' + data);
     let token = null;
     try {
         token = await newAccessToken();
@@ -124,6 +152,7 @@ let newAccessToken = () => {
 }
 
 module.exports = {
+    newCustomer,
     newMakat,
     newOrder,
     newLead

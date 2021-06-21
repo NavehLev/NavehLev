@@ -14,6 +14,8 @@ axios.defaults.baseURL = process.env.ZOHO_CRM_BASE_URL;
 /*
 inbound API
 */
+//Customer
+app.post('/customer', inboundController.customer);
 
 //Makat
 app.post('/makat', inboundController.makat);
@@ -22,6 +24,7 @@ app.post('/makat', inboundController.makat);
 app.post('/lead', inboundController.lead);
 
 //Order
+app.post('/order', inboundController.order);
 
 /*
 outbound API
