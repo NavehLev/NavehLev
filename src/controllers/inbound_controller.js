@@ -2,9 +2,9 @@ require('dotenv').config();
 const axios = require('axios').default;
 const outboundController = require('./outbound_controller.js');
 
-let helpers = {
+let wpHelpers = {
 
-    convertLeadData: (reqData) => {
+    parseLead: (reqData) => {
         return new Promise((resolve, reject) => {
             try {
                 data = {
@@ -26,7 +26,7 @@ let helpers = {
         })
 
     },
-    convertCustomerData: (reqData) => {
+    parseCustomer: (reqData) => {
         return new Promise((resolve, reject) => {
             try {
                 data = {
@@ -48,27 +48,17 @@ let helpers = {
 
         })
     },
-    convertOrderData: (reqData) => {
+    parseOrder: (reqData) => {
         return new Promise((resolve, reject) => {
             try {
                 console.log(reqData);
                 data = {
-                    id: reqData.id,
-                    status: reqData.status,
-                    date_created: reqData.date_created,
-                    discount_total: reqData.discount_total,
-                    discount_tax: reqData.discount_tax,
-                    cart_tax: reqData.cart_tax,
-                    total: reqData.total,
-                    total_tax: reqData.total_tax,
-                    order_key: reqData.order_key,
-                    payment_method: reqData.payment_method,
-                    payment_method_title: reqData.payment_method_title,
-                    transaction_id: reqData.transaction_id,
-                    customer_note: reqData.customer_note,
-                    cart_hash: reqData.cart_hash,
-                    number: reqData.number,
-                    activity_id: reqData.meta_data[1].id,
+                    "data":
+                    {
+                        "wp_id": reqData.id,
+                        "customer_type":"פרטי",
+                        "activity": reqData.meta_data[1].id,
+                    }
                 }
                 resolve(data);
             } catch (err) {
@@ -78,15 +68,47 @@ let helpers = {
         })
     }
 }
+
+let zcHelpers = {
+    parseCustomer: (data) => {
+        return new Promise((resolve, reject) => {
+            try {
+                res = {
+                    customer: {
+                        ID: data.ID
+                    }
+                }
+                resolve(res);
+            } catch (err) {
+                reject(err);
+            }
+        })
+    }
+}
+
 let customer = async (req, res, next) => {
     try {
-        data = await helpers.convertCustomerData(req.body.data);
+        data = await wpHelpers.parseCustomer(req.body.data);
         result = await outboundController.newCustomer(data);
         res.send("result: " + result.data.message);
     } catch (err) {
         console.log(err);
-        res.send(err.message);
+        res.send(err);
     }
+}
+
+let order = async (req, res, next) => {
+    try {
+        //parse income order
+        let data = await wpHelpers.parseOrder(req.body);
+        console.log("parsed data: " + JSON.stringify(data));
+        //check if customer exists
+        result = await outboundController.newOrder(data);
+        console.log(JSON.stringify(result));
+    } catch (err) {
+        console.log(err);
+        res.send(err.message);
+    };
 }
 
 let makat = async (req, res, next) => {
@@ -103,7 +125,7 @@ let makat = async (req, res, next) => {
 
 let lead = async (req, res, next) => {
     try {
-        let data = await helpers.convertLeadData(req.body.data);
+        let data = await wpHelpers.parseLead(req.body.data);
         result = await outboundController.newLead(data);
         res.send("result: " + result.data.message);
     } catch (err) {
@@ -112,21 +134,13 @@ let lead = async (req, res, next) => {
     }
 }
 
-let order = async (req, res, next) => {
-    try {
-        let data = await helpers.convertOrderData(req.body);
-        console.log("parsed data: " + JSON.stringify(data));
-        res.send("wp order data: " + JSON.stringify(data));
-    } catch (err) {
-        console.log(err);
-        res.send(err.message);
-    };
-}
+
 
 
 module.exports = {
     customer,
     makat,
     lead,
-    order
+    order,
+    zcHelpers
 }

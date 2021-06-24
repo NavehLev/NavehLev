@@ -2,24 +2,17 @@ require('dotenv').config();
 const axios = require('axios').default;
 const auth = require('./auth.js');
 
-
-//Priority API
-let getCustomers = () => { }
-let getMakats = () => { }
-
-//Zoho creator API
-
 //add new user
 let newCustomer = async (data) => {
     let token = null;
     try {
-        token = await newAccessToken();
+        token = await auth.getAccessToken();
     } catch (err) {
         console.log(err);
     }
     return new Promise((resolve, reject) => {
         if (token == null) { reject('no token') }
-        let url = process.env.ZOHO_CRM_BASE_URL + '/form/Enterprise';
+        let url = process.env.ZOHO_CRM_BASE_URL + '/form/Customer';
         let config = {
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -38,8 +31,33 @@ let newCustomer = async (data) => {
             });
     })
 }
-//let getCustomer -> add
-
+//get customer by identity_number
+let getCustomer = async(id) =>{
+    let token = null;
+    try {
+        token = await auth.getAccessToken();
+    } catch (err) {
+        console.log(err);
+    }
+    return new Promise((resolve, reject) => {
+        if (token == null) { reject('no token') }
+        let url = process.env.ZOHO_CRM_BASE_URL + '/report/customers?identity_number=' + id;
+        let config = {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        }
+        response = axios.get(
+            url,
+            config
+        ).then((response) => {
+            resolve(response);
+        })
+            .catch((error) => {
+                reject(error);
+            });
+    })
+}
 
 //add new order
 let newOrder = async (data) => {
@@ -63,7 +81,7 @@ let newOrder = async (data) => {
             data,
             config
         ).then(function (response) {
-            console.log('data: ' + response.data);
+            console.log('data: ' + JSON.stringify(response.data));
             resolve(response.data);
         })
             .catch((error) => {
@@ -161,6 +179,7 @@ let newAccessToken = () => {
 
 module.exports = {
     newCustomer,
+    getCustomer,
     newMakat,
     newOrder,
     newLead
