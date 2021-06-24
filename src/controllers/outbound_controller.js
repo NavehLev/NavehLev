@@ -34,7 +34,7 @@ let newCustomer = async (data) => {
 }
 //get customer by identity_number
 let getCustomer = async (phone) => {
-    console.log('get customer');
+
     let token = null;
     try {
         token = await auth.getAccessToken();
@@ -43,7 +43,7 @@ let getCustomer = async (phone) => {
     }
     return new Promise((resolve, reject) => {
         if (token == null) { reject('no token') }
-        let url = process.env.ZOHO_CRM_BASE_URL + '/report/customers?phone=' + phone;
+        let url = process.env.ZOHO_CRM_BASE_URL + '/report/customers';
         let config = {
             headers: {
                 'Authorization': `Bearer ${token}`
