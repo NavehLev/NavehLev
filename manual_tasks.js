@@ -13,11 +13,12 @@ orderData = {
         "paying_customer": "4087609000000525047",
         "order_items_subform": [
             {
-                "makat": "4087609000000339659",
+                "makat": "4087609000000339807",
                 "amount": "1"
             }
         ],
-        "customer_type":"פרטי"
+        "customer_type":"פרטי",
+        "activity":"4087609000000703036"
     }
 }
 
@@ -30,7 +31,7 @@ customerData = {
         }
     }
 }
-let test = async () => { 
+let testCustomer = async () => { 
     let customerID;
     try{
         //check if customer exists on zoho
@@ -52,4 +53,24 @@ let test = async () => {
         }
     }
 }
-test();
+
+let testOrder = async() => {
+    try {
+        let newOrder = await outboundController.newOrder(orderData);
+        console.log('New order added: ' + newOrder.data.data);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+let getCustomer = async() => {
+    try {
+        let customer = await outboundController.getCustomer('+972533376766');
+        console.log(customer);
+    } catch (error) {
+        console.log("error: " + error);
+    }
+}
+//testCustomer();
+//testOrder();
+getCustomer();

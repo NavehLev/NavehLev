@@ -26,22 +26,20 @@ let wpHelpers = {
         })
 
     },
-    parseCustomer: (reqData) => {
+    parseCustomer: (data) => {
         return new Promise((resolve, reject) => {
             try {
-                data = {
-                    "data": {
-                        name: reqData.CUSTDES,
-                        email: reqData.EMAIL,
-                        phone: reqData.PHONE,
-                        priority_serial: "",
-                        address: {
-                            district_city: reqData.STATE
+                res = {
+                    data:{
+                        name: {
+                            first_name: data.billing.first_name,
+                            last_name: data.billing.last_name
                         },
-                        payment_terms: ""
+                        phone: data.billing.phone,
+                        email: data.billing.email
                     }
                 }
-                resolve(data);
+                resolve(res);
             } catch (err) {
                 reject(err);
             }
@@ -51,13 +49,17 @@ let wpHelpers = {
     parseOrder: (reqData) => {
         return new Promise((resolve, reject) => {
             try {
-                console.log(reqData);
                 data = {
-                    "data":
-                    {
-                        "wp_id": reqData.id,
-                        "customer_type":"פרטי",
-                        "activity": reqData.meta_data[1].id,
+                    data: {
+                        customer_type: 'פרטי',
+                        paying_customer: null,
+                        activityId: reqData.meta_data[1].value,
+                        order_items_subform: [
+                            {
+                                makat: "4087609000000339807",
+                                amount: "1"
+                            }
+                        ]
                     }
                 }
                 resolve(data);
@@ -74,16 +76,21 @@ let zcHelpers = {
         return new Promise((resolve, reject) => {
             try {
                 res = {
-                    customer: {
-                        ID: data.ID
-                    }
+                    name: {
+                        first_name: data.billing.first_name,
+                        last_name: data.billing.last_name
+                    },
+                    phone: data.billing.phone,
+                    email: data.billing.email
                 }
+                console.log('res: ' + res)
                 resolve(res);
             } catch (err) {
+                console.log('error: ' + err)
                 reject(err);
             }
         })
-    }
+    },
 }
 
 let customer = async (req, res, next) => {
@@ -99,14 +106,30 @@ let customer = async (req, res, next) => {
 
 let order = async (req, res, next) => {
     try {
-        //parse income order
-        let data = await wpHelpers.parseOrder(req.body);
-        console.log("parsed data: " + JSON.stringify(data));
-        //check if customer exists
-        result = await outboundController.newOrder(data);
-        console.log(JSON.stringify(result));
+        let customerID = '4087609000000525047';
+        //parse income order to customer data
+        console.log('1 - parse income order to customer');
+        let customerData = await wpHelpers.parseCustomer(req.body);
+
+        //get customer ID
+        console.log('2 - get customer id');
+        console.log('customer phone: ' + customerData.data.phone);
+        let customer = outboundController.getCustomer(customerData.data.phone);
+        console.log('customer id: ' + customerID);
+        //parse income order to order data
+        console.log('3 - parse order to order data');
+        let orderData = await wpHelpers.parseOrder(req.body);
+        //update customer id in order
+        console.log('4 - update custome in order data');
+        orderData.data.paying_customer = customerID;
+        console.log(orderData);
+        console.log('5 - create new order');
+        //create new order on zoho
+        result = await outboundController.newOrder(orderData);
+        console.log(result.data);
+        res.send(result.data);
     } catch (err) {
-        console.log(err);
+        console.log(err.message);
         res.send(err.message);
     };
 }

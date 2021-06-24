@@ -4,11 +4,13 @@ const auth = require('./auth.js');
 
 //add new user
 let newCustomer = async (data) => {
+    console.log("post data:" + data);
+
     let token = null;
     try {
         token = await auth.getAccessToken();
     } catch (err) {
-        console.log(err);
+        console.log(err.response);
     }
     return new Promise((resolve, reject) => {
         if (token == null) { reject('no token') }
@@ -26,22 +28,22 @@ let newCustomer = async (data) => {
             resolve(response);
         })
             .catch((error) => {
-                console.log(error);
                 reject(error);
             });
     })
 }
 //get customer by identity_number
-let getCustomer = async(id) =>{
+let getCustomer = async (phone) => {
+    console.log('get customer');
     let token = null;
     try {
         token = await auth.getAccessToken();
     } catch (err) {
-        console.log(err);
+        console.log(err.response);
     }
     return new Promise((resolve, reject) => {
         if (token == null) { reject('no token') }
-        let url = process.env.ZOHO_CRM_BASE_URL + '/report/customers?identity_number=' + id;
+        let url = process.env.ZOHO_CRM_BASE_URL + '/report/customers?phone=' + phone;
         let config = {
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -64,12 +66,11 @@ let newOrder = async (data) => {
     let token = null;
     try {
         token = await auth.getAccessToken();
-        console.log('new order token: ' + token);
     } catch (err) {
-        console.log(err);
+        console.log(err.response);
     }
     return new Promise((resolve, reject) => {
-        if (token != null) { reject('no token') }
+        if (token == null) { reject('no token') }
         let url = process.env.ZOHO_CRM_BASE_URL + '/form/Order';
         let config = {
             headers: {
@@ -81,42 +82,9 @@ let newOrder = async (data) => {
             data,
             config
         ).then(function (response) {
-            console.log('data: ' + JSON.stringify(response.data));
-            resolve(response.data);
+            resolve(response);
         })
             .catch((error) => {
-                console.log(error);
-                reject(error);
-            });
-    })
-}
-
-//add new makat
-let newMakat = async (data) => {
-    let token = null;
-    try {
-        token = await newAccessToken();
-    } catch (err) {
-        console.log(err);
-    }
-    return new Promise((resolve, reject) => {
-        if (token != null) { reject('no token') }
-        let url = process.env.ZOHO_CRM_BASE_URL + '/form/Makat';
-        let config = {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        }
-        axios.post(
-            url,
-            data,
-            config
-        ).then(function (response) {
-            console.log('data: ' + response.data);
-            resolve(response.data);
-        })
-            .catch((error) => {
-                console.log(error);
                 reject(error);
             });
     })
@@ -177,10 +145,15 @@ let newAccessToken = () => {
 
 }
 
+//get customer id from zoho by phone or add new customer. data = parsed data from WP
+let getCustomerId = async (data) => {
+   
+}
+
 module.exports = {
     newCustomer,
     getCustomer,
-    newMakat,
+    getCustomerId,
     newOrder,
     newLead
 }
