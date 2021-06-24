@@ -1,5 +1,6 @@
 require('dotenv').config();
 const axios = require('axios').default;
+const auth = require('./auth.js');
 
 
 //Priority API
@@ -7,6 +8,8 @@ let getCustomers = () => { }
 let getMakats = () => { }
 
 //Zoho creator API
+
+//add new user
 let newCustomer = async (data) => {
     let token = null;
     try {
@@ -35,7 +38,42 @@ let newCustomer = async (data) => {
             });
     })
 }
+//let getCustomer -> add
 
+
+//add new order
+let newOrder = async (data) => {
+    let token = null;
+    try {
+        token = await auth.getAccessToken();
+        console.log('new order token: ' + token);
+    } catch (err) {
+        console.log(err);
+    }
+    return new Promise((resolve, reject) => {
+        if (token != null) { reject('no token') }
+        let url = process.env.ZOHO_CRM_BASE_URL + '/form/Order';
+        let config = {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        }
+        axios.post(
+            url,
+            data,
+            config
+        ).then(function (response) {
+            console.log('data: ' + response.data);
+            resolve(response.data);
+        })
+            .catch((error) => {
+                console.log(error);
+                reject(error);
+            });
+    })
+}
+
+//add new makat
 let newMakat = async (data) => {
     let token = null;
     try {
@@ -66,6 +104,7 @@ let newMakat = async (data) => {
     })
 }
 
+//add new lead
 let newLead = async (data) => {
     let token = null;
     try {
@@ -94,37 +133,6 @@ let newLead = async (data) => {
             });
     })
 }
-
-let newOrder = async (data) => {
-    let token = null;
-    try {
-        token = await newAccessToken();
-    } catch (err) {
-        console.log(err);
-    }
-    return new Promise((resolve, reject) => {
-        if (token != null) { reject('no token') }
-        let url = process.env.ZOHO_CRM_BASE_URL + '/form/Order';
-        let config = {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        }
-        axios.post(
-            url,
-            data,
-            config
-        ).then(function (response) {
-            console.log('data: ' + response.data);
-            resolve(response.data);
-        })
-            .catch((error) => {
-                console.log(error);
-                reject(error);
-            });
-    })
-}
-
 
 //Authentication API
 let newAccessToken = () => {

@@ -10,12 +10,13 @@
     "mongodb": "^3.6.3",
     "mongoose": "^5.11.10",
     "nodemon": "^2.0.6",
+    "oauth": "^0.9.15",
     "open": "^7.3.0"
   },
   "devDependencies": {},
   "scripts": {
     "test": "dev",
-    "dev": "nodemon app.js"
+    "dev": "nodemon ./src/app.js"
   },
   "author": "Naveh Lev",
   "license": "ISC",
