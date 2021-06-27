@@ -4,7 +4,7 @@ const auth = require('./auth.js');
 
 //add new user
 let newCustomer = async (data) => {
-    console.log("customer data outbound:" + data);
+    console.log("customer data outbound: " + data);
 
     let token = null;
     try {
