@@ -84,26 +84,19 @@ let customer = async (req, res, next) => {
 
 let order = async (req, res, next) => {
     try {
+        console.log("/order was called");
         let customerID = null;
         //parse income order to customer data
-        console.log('1 - parse income order to customer');
         let customerData = await wpHelpers.parseCustomer(req.body);
 
         //get customer ID
-        console.log('2 - get customer id');
         let customer = await outboundController.newCustomer(JSON.stringify(customerData));
-        customerID = customer.data.data.ID; //
-        //parse income order to order data
-        console.log('3 - parse order to order data');
+        customerID = customer.data.data.ID; 
         let orderData = await wpHelpers.parseOrder(req.body);
-        //update customer id in order
-        console.log('4 - update customer in order data');
         orderData.data.paying_customer = customerID;
-        console.log(orderData);
-        console.log('5 - create new order');
         //create new order on zoho
         result = await outboundController.newOrder(orderData);
-        console.log(result.data);
+        console.log("new order result: " + result.data);
         res.send(result.data);
     } catch (err) {
         console.log(err.message);
