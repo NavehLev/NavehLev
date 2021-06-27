@@ -1,5 +1,5 @@
 require('dotenv').config();
-let inboundController = require('./controllers/inbound_controller');
+let inboundController = require('./src/controllers/inbound_controller');
 const axios = require('axios').default;
 
 const express = require('express');
