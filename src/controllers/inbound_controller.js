@@ -29,9 +29,9 @@ let wpHelpers = {
     parseCustomer: (data) => {
         return new Promise((resolve, reject) => {
             try {
-                res = {
+                data = {
                     data:{
-                        name: {
+                        name_heb: {
                             first_name: data.billing.first_name,
                             last_name: data.billing.last_name
                         },
@@ -39,7 +39,7 @@ let wpHelpers = {
                         email: data.billing.email
                     }
                 }
-                resolve(res);
+                resolve(data);
             } catch (err) {
                 reject(err);
             }
@@ -53,7 +53,7 @@ let wpHelpers = {
                     data: {
                         customer_type: 'פרטי',
                         paying_customer: null,
-                        activityId: reqData.meta_data[1].value,
+                        activity: reqData.meta_data[1].value,
                         order_items_subform: [
                             {
                                 makat: "4087609000000339807",
@@ -71,28 +71,6 @@ let wpHelpers = {
     }
 }
 
-let zcHelpers = {
-    parseCustomer: (data) => {
-        return new Promise((resolve, reject) => {
-            try {
-                res = {
-                    name: {
-                        first_name: data.billing.first_name,
-                        last_name: data.billing.last_name
-                    },
-                    phone: data.billing.phone,
-                    email: data.billing.email
-                }
-                console.log('res: ' + res)
-                resolve(res);
-            } catch (err) {
-                console.log('error: ' + err)
-                reject(err);
-            }
-        })
-    },
-}
-
 let customer = async (req, res, next) => {
     try {
         data = await wpHelpers.parseCustomer(req.body.data);
@@ -106,21 +84,20 @@ let customer = async (req, res, next) => {
 
 let order = async (req, res, next) => {
     try {
-        let customerID = '4087609000000525047';
+        let customerID = null;
         //parse income order to customer data
         console.log('1 - parse income order to customer');
         let customerData = await wpHelpers.parseCustomer(req.body);
 
         //get customer ID
         console.log('2 - get customer id');
-        console.log('customer phone: ' + customerData.data.phone);
-        let customer = outboundController.getCustomer(customerData.data.phone);
-        console.log('customer id: ' + customerID);
+        let customer = await outboundController.newCustomer(JSON.stringify(customerData));
+        customerID = customer.data.data.ID; //
         //parse income order to order data
         console.log('3 - parse order to order data');
         let orderData = await wpHelpers.parseOrder(req.body);
         //update customer id in order
-        console.log('4 - update custome in order data');
+        console.log('4 - update customer in order data');
         orderData.data.paying_customer = customerID;
         console.log(orderData);
         console.log('5 - create new order');
@@ -165,5 +142,4 @@ module.exports = {
     makat,
     lead,
     order,
-    zcHelpers
 }

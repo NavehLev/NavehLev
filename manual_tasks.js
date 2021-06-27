@@ -73,4 +73,4 @@ let getCustomer = async() => {
 }
 //testCustomer();
 //testOrder();
-getCustomer();
+//getCustomer();

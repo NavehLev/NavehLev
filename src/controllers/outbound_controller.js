@@ -4,7 +4,7 @@ const auth = require('./auth.js');
 
 //add new user
 let newCustomer = async (data) => {
-    console.log("post data:" + data);
+    console.log("customer data outbound:" + data);
 
     let token = null;
     try {
@@ -28,6 +28,7 @@ let newCustomer = async (data) => {
             resolve(response);
         })
             .catch((error) => {
+                console.log('error: ' +  error);
                 reject(error);
             });
     })
@@ -63,6 +64,8 @@ let getCustomer = async (phone) => {
 
 //add new order
 let newOrder = async (data) => {
+    console.log("order data outbound:" + JSON.stringify(data));
+
     let token = null;
     try {
         token = await auth.getAccessToken();
